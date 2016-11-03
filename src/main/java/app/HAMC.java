@@ -52,13 +52,13 @@ public class HAMC {
 		bufferReader.close();
 
 		// run HMAC sha-256
-		byte[] finalResult = null;
+		String finalResult;
 		if (isCreate) {
 			HmacSha256 hmacSha256 = new HmacSha256(key, messages);
 			finalResult = hmacSha256.HmacSHA256();
 		} else {
 			VerifyHmac verify = new VerifyHmac(key, messages);
-			finalResult = verify.HmacSHA256();
+			finalResult = HexBinary.encode(verify.HmacSHA256());
 		}
 		
 		// write to output file
@@ -68,7 +68,7 @@ public class HAMC {
 		}
 		outputFile.createNewFile();
 		FileWriter fileWriter = new FileWriter(outputFile);
-		fileWriter.write(HexBinary.encode(finalResult));
+		fileWriter.write(finalResult);
 		fileWriter.close();
 	}
 

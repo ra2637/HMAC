@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.List;
 
+import utils.HexBinary;
+
 
 /**
  *  Handle input args
@@ -22,10 +24,10 @@ public class App {
 			if (args.length < 1) {
 				throw new InputMismatchException("Insufficient parameters.");
 			}
-
+			
+			List<String> parameters = Arrays.asList(args);
 			try {
 				Command command = Command.valueOf(args[0].toUpperCase());
-				List<String> parameters = Arrays.asList(args);
 				parameters = parameters.subList(1, args.length);
 				
 				switch (command) {
@@ -33,8 +35,8 @@ public class App {
 					new SHA256(parameters);
 					break;
 				case HMAC:
-					SubCommand subCommand = SubCommand.valueOf(parameters.get(0));
-					parameters = parameters.subList(1, args.length);
+					SubCommand subCommand = SubCommand.valueOf(parameters.get(0).toUpperCase());
+					parameters = parameters.subList(1, args.length-1);
 					switch (subCommand) {
 					case CREATE:
 						new HAMC(parameters, true);
@@ -44,10 +46,7 @@ public class App {
 						break;
 					}
 				}
-			} catch (IllegalArgumentException e) {
-				throw new InputMismatchException("Invalid command: " + args[0]);
-			} 
-			catch (Exception e) {
+			} catch (Exception e) {
 				e.printStackTrace();;
 			}
 		} catch (Exception e) {
