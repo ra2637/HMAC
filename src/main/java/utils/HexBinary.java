@@ -38,7 +38,7 @@ public class HexBinary {
 		StringBuffer result = new StringBuffer();
 		for (int i = 0; i < pHexBinary.length; i++) {
 			byte b = pHexBinary[i];
-			byte c = (byte) ((b & 0xf0) >> 4);
+			byte c = (byte) ((b & 0xf0) >>> 4);
 			if (c <= 9) {
 				result.append((char) ('0' + c));
 			} else {

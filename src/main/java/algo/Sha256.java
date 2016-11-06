@@ -1,6 +1,5 @@
 package algo;
 
-import java.nio.charset.StandardCharsets;
 import java.util.InputMismatchException;
 
 import utils.BitHelper;
@@ -43,13 +42,13 @@ public class Sha256 {
 	};
 
 	private byte[] password;
-
-	public Sha256(String password) {
-		this.password = password.getBytes(StandardCharsets.UTF_8);
+	
+	public Sha256(byte[] input) {
+		this.password = input;
 		// TODO: check if msg bits < 2^64 
 	}
 
-	public String digest() {
+	public byte[] digest() {
 		byte[] paddingPassword = padding();
 		byte[][] hash = Sha256.initHash;
 		for (int i = 0; i < paddingPassword.length; i+=64) {
@@ -62,10 +61,11 @@ public class Sha256 {
 			hash = newHash;
 		}
 		
-		String result = "";
+		byte[] result = new byte[32];
 		for (int i = 0; i < hash.length; i++) {
-			result += HexBinary.encode(hash[i]); 
-			
+			for (int j = 0; j < hash[i].length; j++) {
+				result[i*4+j] = hash[i][j]; 
+			}
 		}
 		return result;
 	}

@@ -1,8 +1,10 @@
 package app;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.InputMismatchException;
 import java.util.List;
 
@@ -28,18 +30,20 @@ public class SHA256 {
 
 		try {
 			// hash password
-			Sha256 sha256 = new Sha256(passwordStr);
-			String result = sha256.digest();
+			Sha256 sha256 = new Sha256(passwordStr.getBytes(StandardCharsets.UTF_8));
+			byte[] result = sha256.digest();
 
 			// write to outputfile
 			File keyFile = new File(keyFileStr);
 			if (keyFile.exists()) {
-				System.out.println("Overwrite existed file: " + keyFileStr);
+				System.out.println("Overwrite existed output file: " + keyFileStr);
 			}
 			keyFile.createNewFile();
-			FileWriter fileWriter = new FileWriter(keyFile);
-			fileWriter.write(result);
-			fileWriter.close();
+			BufferedOutputStream writer = new BufferedOutputStream(new FileOutputStream(keyFile));
+	        writer.write(result);
+	        writer.close();
+	        
+	        System.out.println(HexBinary.encode(result));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
