@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 
 import org.junit.Test;
 
@@ -25,7 +26,7 @@ public class TestSha256 {
 		}
 		BitHelper.setBit(expected, 512 - 5);
 		BitHelper.setBit(expected, 512 - 4);
-		Sha256 sha256 = new Sha256("abc");
+		Sha256 sha256 = new Sha256("abc".getBytes(StandardCharsets.UTF_8));
 		Method method = Sha256.class.getDeclaredMethod("padding", null);
 		method.setAccessible(true);
 		byte[] result = (byte[]) method.invoke(sha256, null);
@@ -35,12 +36,12 @@ public class TestSha256 {
 	@Test
 	public void TestDigest() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		String expect = "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad".toUpperCase();
-		Sha256 sha256 = new Sha256("abc");
-		assertEquals(expect, sha256.digest());
+		Sha256 sha256 = new Sha256("abc".getBytes(StandardCharsets.UTF_8));
+		assertEquals(expect, HexBinary.encode(sha256.digest()));
 		
-		sha256= new Sha256("afd;lkbamn.,4q35");
+		sha256= new Sha256("afd;lkbamn.,4q35".getBytes(StandardCharsets.UTF_8));
 		expect = "d8a4cdb8643335d3f0221c79b6b0bb8197e90a2146b4149f67a7e0a5f6059a0c".toUpperCase();
-		assertEquals(expect, sha256.digest());
+		assertEquals(expect, HexBinary.encode(sha256.digest()));
 	}
 
 }
