@@ -1,6 +1,8 @@
 # HMAC
-self development HMAC, using sha-256 hash
+self development HMAC and sha-256.
+
 There are three bash scripts for Ubuntu: sha256, hmac, runDemo
+
 `sha256` uses self-implemented sha-256 algorithm to create password hash and store it in keyFile, you can specify the password and keyFile
 `./sha256 $password $keyFile`
 
