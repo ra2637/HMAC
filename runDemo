@@ -1,0 +1,62 @@
+#!/bin/bash
+
+baseDir=`realpath .`
+buildDir="${baseDir}"/build
+demoDir="${baseDir}"/demo
+manifestFile="${buildDir}"/Manifest.txt
+
+if [ ! -d "${buildDir}" ]; then
+  mkdir "${buildDir}" 
+fi
+if [ ! -d "${demoDir}" ]; then
+  mkdir "${demoDir}" 
+fi
+
+echo "---- building src ----"
+find src/main -name *.java > "${buildDir}"/buildList
+javac -d ./build @"${buildDir}"/buildList
+echo "Main-Class: app.App" > "${manifestFile}"
+echo "---- build done ----"
+
+jarFile="${demoDir}"/hmac.jar
+echo "---- building jar ----"
+cd ${buildDir}
+find "${buildDir}" -name *.class > "${buildDir}"/buildList
+jar cfm "${jarFile}" "${manifestFile}" algo app utils
+cd "${baseDir}"
+
+echo "---- run sha256 hash ----"
+password='sha256Hash'
+keyFile="${demoDir}"/keyFile
+demoKey="java -jar ${jarFile} sha256 ${password} ${keyFile}"
+echo "${demoKey}"
+java -jar ${jarFile} sha256 ${password} ${keyFile}
+
+messageFile="${demoDir}"/messageFile
+echo "The fast brown fox jumps over the lazy dog" > "${messageFile}"
+
+echo "---- run HMAC ----"
+outputFile="${demoDir}/outputFile"
+demoHMAC="java -jar ${jarFile} hmac create ${keyFile} ${messageFile} ${outputFile}"
+echo "${demoHMAC}"
+java -jar ${jarFile} hmac create ${keyFile} ${messageFile} ${outputFile}
+
+echo "---- run HMAC by java lib  ----"
+verifyOutputFile="${demoDir}/outputFile.ver"
+verifyHMAC="java -jar ${jarFile} hmac verify ${keyFile} ${messageFile} ${verifyOutputFile}"
+echo "${verifyHMAC}"
+java -jar ${jarFile} hmac verify ${keyFile} ${messageFile} ${verifyOutputFile}
+
+echo "---- verify result ----"
+result=`diff ${outputFile} ${verifyOutputFile}`
+if [ -z "${result}" ]; then
+  echo "same result"
+  cat ${outputFile}
+  echo ''
+else
+  echo "different result"
+  echo "${outputFile}: `cat ${outputFile}`"
+  echo "${verifyOutputFile}: `cat ${verifyOutputFile}`"
+  echo ''
+fi
+
