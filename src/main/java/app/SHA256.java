@@ -42,7 +42,6 @@ public class SHA256 {
 			BufferedOutputStream writer = new BufferedOutputStream(new FileOutputStream(keyFile));
 	        writer.write(result);
 	        writer.close();
-	        
 	        System.out.println(HexBinary.encode(result));
 		} catch (IOException e) {
 			e.printStackTrace();

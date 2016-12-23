@@ -74,8 +74,8 @@ public class Sha256 {
 		// run 64 rounds
 		byte[][] hash = initHash.clone();
 		for (int i = 0; i < 64; i++) {
-				//  T1 = h + Σ1(e) + Ch(e, f, g) + Ki + Wi
-				//	T2 = Σ0(a) + Maj(a, b, c)
+				//  T1 = h + sigma1(e) + Ch(e, f, g) + Ki + Wi
+				//	T2 = sigma0(a) + Maj(a, b, c)
 				//	h = g
 				//	g = f
 				//	f = e
@@ -173,9 +173,9 @@ public class Sha256 {
 	 * @return word
 	 */
 	private byte[] caclulateWord(byte[] w_2, byte[] w_7, byte[] w_15, byte[] w_16){
-		// Wi = σ1(Wi−2) + Wi−7 + σ0(Wi−15) + Wi−16
-		// σ0(X) = RotR(X, 7) ⊕ RotR(X, 18) ⊕ ShR(X, 3),
-		// σ1(X) = RotR(X, 17) ⊕ RotR(X, 19) ⊕ ShR(X, 10),
+		// Wi = sigma1(Wi-2) + Wi-7 + sigma0(Wi-15) + Wi-16
+		// sigma0(X) = RotR(X, 7) xor RotR(X, 18) xor ShR(X, 3),
+		// sigma1(X) = RotR(X, 17) xor RotR(X, 19) xor ShR(X, 10),
 		byte[] rotRX1 = BitHelper.rightRotate(w_2, 17);
 		byte[] rotRX2 = BitHelper.rightRotate(w_2, 19);
 		byte[] shR = BitHelper.rigthShiftBit(w_2, 10);
@@ -196,20 +196,20 @@ public class Sha256 {
 	
 	
 	private byte[] caculateT1(byte[][] initHash, byte[] K, byte[] W){
-		//  T1 = h + Σ1(e) + Ch(e, f, g) + Ki + Wi
+		//  T1 = h + sigma1(e) + Ch(e, f, g) + Ki + Wi
 		byte[] e = initHash[4];
 		byte[] f = initHash[5];
 		byte[] g = initHash[6];
 		byte[] h = initHash[7];
 		
-		//	Σ1(X) = RotR(X, 6) ⊕ RotR(X, 11) ⊕ RotR(X, 25),
+		//	sigma1(X) = RotR(X, 6) xor RotR(X, 11) xor RotR(X, 25),
 		byte[] rotR1 = BitHelper.rightRotate(e, 6);
 		byte[] rotR2 = BitHelper.rightRotate(e, 11);
 		byte[] rotR3 = BitHelper.rightRotate(e, 25);
 		byte[] sigma1 =  ByteHelper.xORByteArray(rotR1, rotR2);
 		sigma1 = ByteHelper.xORByteArray(sigma1, rotR3);
 		
-		//  Ch(X, Y, Z) = (X ∧ Y ) ⊕ (-X ∧ Z),
+		//  Ch(X, Y, Z) = (X and Y ) xor (-X and Z),
 		byte[] ef = ByteHelper.andByteArray(e, f);
 		byte[] eg = ByteHelper.andByteArray(ByteHelper.complementByteArray(e), g);
 		byte[] efg = ByteHelper.xORByteArray(ef, eg);
@@ -222,19 +222,19 @@ public class Sha256 {
 	}
 	
 	private byte[] caculateT2(byte[][] initHash){
-		//	T2 = Σ0(a) + Maj(a, b, c)
+		//	T2 = sigma0(a) + Maj(a, b, c)
 		byte[] a = initHash[0];
 		byte[] b = initHash[1];
 		byte[] c = initHash[2];
 		
-		//	Σ0(X) = RotR(X, 2) ⊕ RotR(X, 13) ⊕ RotR(X, 22),		
+		//	sigma0(X) = RotR(X, 2) xor RotR(X, 13) xor RotR(X, 22),		
 		byte[] rotR1 = BitHelper.rightRotate(a, 2);
 		byte[] rotR2 = BitHelper.rightRotate(a, 13);
 		byte[] rotR3 = BitHelper.rightRotate(a, 22);
 		byte[] sigma0 =  ByteHelper.xORByteArray(rotR1, rotR2);
 		sigma0 = ByteHelper.xORByteArray(sigma0, rotR3);
 		
-		//  Maj(X, Y, Z) = (X ∧ Y ) ⊕ (X ∧ Z) ⊕ (Y ∧ Z),
+		//  Maj(X, Y, Z) = (X and Y ) xor (X and Z) xor (Y and Z),
 		byte[] ab = ByteHelper.andByteArray(a, b);
 		byte[] ac = ByteHelper.andByteArray(a, c);
 		byte[] bc = ByteHelper.andByteArray(b, c);
